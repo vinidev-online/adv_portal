@@ -1,0 +1,40 @@
+@tailwind base;
+
+@layer base {
+  body {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: min-content;
+    grid-template-areas:
+      "cabecalho cabecalho cabecalho"
+      "principal principal principal"
+      "outros outros lateral"
+      "rodape rodape rodape";
+  }
+}
+
+@tailwind components;
+
+@layer components {
+  .cabecalho {
+    grid-area: cabecalho;
+  }
+  .principal {
+    grid-area: principal;
+  }
+  .lateral {
+    grid-area: lateral;
+  }
+  .outros {
+    grid-area: outros;
+  }
+  .rodape {
+    grid-area: rodape;
+  }
+  .transicao-hover {
+    @apply transition-all duration-200 ease-out;
+  }
+}
+
+@tailwind utilities;

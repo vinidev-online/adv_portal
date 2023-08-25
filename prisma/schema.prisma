@@ -1,0 +1,238 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id           String        @id @default(cuid())
+  email        String        @unique @db.VarChar(120)
+  senha        String?       @db.VarChar(120)
+  nome         String        @db.VarChar(150)
+  slug         String?       @unique @db.VarChar(150)
+  dataNasc     DateTime
+  genero       UsuarioGenero
+  bio          String?       @db.LongText
+  foto         String?       @db.VarChar(255)
+  whatsApp     String        @db.VarChar(20)
+  instagram    String?       @db.VarChar(255)
+  status       UsuarioStatus
+  tipoUsuario  UsuarioTipo
+  igreja       Igreja?       @relation(fields: [igrejaId], references: [id])
+  distrito     Distrito?
+  criadoEm     DateTime      @default(now())
+  atualizadoEm DateTime      @updatedAt
+
+  igrejaId String?
+  Texto    Texto[]
+  Pagina   Pagina[]
+
+  @@map("usuarios")
+}
+
+enum UsuarioGenero {
+  masculino
+  feminino
+}
+
+enum UsuarioStatus {
+  ativo
+  inativo
+}
+
+enum UsuarioTipo {
+  comum
+  administrador
+  pastor
+}
+
+model Igreja {
+  id           String   @id @default(cuid())
+  local        Local    @relation(fields: [localId], references: [id])
+  slug         String?  @unique @db.VarChar(150)
+  foto         String?  @db.VarChar(255)
+  distrito     Distrito @relation(fields: [distritoId], references: [id])
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  usuarios   Usuario[]
+  localId    String    @unique
+  textos     Texto[]
+  distritoId String
+  Anuncio    Anuncio[]
+
+  @@map("igrejas")
+}
+
+model Local {
+  id           String   @id @default(cuid())
+  nome         String   @unique @db.VarChar(150)
+  endereco     String   @db.VarChar(255)
+  latitude     String   @db.VarChar(15)
+  longitude    String   @db.VarChar(15)
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  Igreja Igreja?
+  Evento Evento[]
+
+  @@map("locais")
+}
+
+model Distrito {
+  id           String   @id @default(cuid())
+  nome         String   @db.VarChar(150)
+  slug         String?  @unique @db.VarChar(150)
+  pastor       Usuario  @relation(fields: [usuarioId], references: [id])
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  Igreja    Igreja[]
+  usuarioId String   @unique
+  Texto     Texto[]
+
+  @@map("distritos")
+}
+
+model Texto {
+  id            String         @id @default(cuid())
+  imagem        String?        @db.VarChar(255)
+  video         String?        @db.VarChar(255)
+  evento        Evento?        @relation(fields: [eventoId], references: [id])
+  titulo        String?        @db.VarChar(255)
+  slug          String?        @unique @db.VarChar(255)
+  subtitulo     String?        @db.VarChar(255)
+  conteudo      String         @db.LongText
+  tipo          Tipo           @relation(fields: [tipoId], references: [id])
+  departamentos Departamento[]
+  autor         Usuario        @relation(fields: [usuarioId], references: [id])
+  fonte         String?        @db.VarChar(255)
+  igreja        Igreja?        @relation(fields: [igrejaId], references: [id])
+  distrito      Distrito?      @relation(fields: [distritoId], references: [id])
+  comentarios   Comentario[]
+  tags          Tag[]
+  publicadoEm   DateTime?
+  status        TextoStatus
+  criadoEm      DateTime       @default(now())
+  atualizadoEm  DateTime       @updatedAt
+
+  tipoId     String
+  usuarioId  String
+  igrejaId   String
+  eventoId   String?
+  Anuncio    Anuncio[]
+  anuncioId  String?
+  distritoId String?
+
+  @@map("textos")
+}
+
+enum TextoStatus {
+  rascunho
+  publicado
+}
+
+model Evento {
+  id           String   @id @default(cuid())
+  data         DateTime
+  local        Local    @relation(fields: [localId], references: [id])
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  textos  Texto[]
+  localId String
+
+  @@map("eventos")
+}
+
+model Tipo {
+  id           String   @id @default(cuid())
+  nome         String   @unique @db.VarChar(20)
+  slug         String?  @unique @db.VarChar(20)
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  textos Texto[]
+
+  @@map("tipos")
+}
+
+model Departamento {
+  id           String   @id @default(cuid())
+  nome         String   @unique @db.VarChar(40)
+  abreviacao   String   @unique @db.VarChar(40)
+  slug         String?  @unique @db.VarChar(40)
+  imagem       String   @db.VarChar(255)
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  textos Texto[]
+
+  @@map("departamentos")
+}
+
+model Comentario {
+  id           String   @id @default(cuid())
+  titulo       String   @db.VarChar(150)
+  conteudo     String   @db.LongText
+  autor        String   @db.VarChar(150)
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  texto    Texto?  @relation(fields: [textoId], references: [id])
+  textoId  String?
+  Pagina   Pagina? @relation(fields: [paginaId], references: [id])
+  paginaId String?
+
+  @@map("comentarios")
+}
+
+model Tag {
+  id           String   @id @default(cuid())
+  nome         String   @unique @db.VarChar(30)
+  slug         String?  @unique @db.VarChar(30)
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  Texto  Texto[]
+  Pagina Pagina[]
+
+  @@map("tags")
+}
+
+model Pagina {
+  id           String       @id @default(cuid())
+  titulo       String       @db.VarChar(150)
+  slug         String?      @unique @db.VarChar(150)
+  subtitulo    String?      @db.VarChar(255)
+  conteudo     String       @db.LongText
+  autor        Usuario      @relation(fields: [usuarioId], references: [id])
+  tags         Tag[]
+  comentarios  Comentario[]
+  criadoEm     DateTime     @default(now())
+  atualizadoEm DateTime     @updatedAt
+
+  usuarioId String
+
+  @@map("paginas")
+}
+
+model Anuncio {
+  id           String   @id @default(cuid())
+  slides       Texto[]
+  data         DateTime
+  slug         String?  @unique @db.VarChar(100)
+  igreja       Igreja   @relation(fields: [igrejaId], references: [id])
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  igrejaId String
+
+  @@map("anuncios")
+}
