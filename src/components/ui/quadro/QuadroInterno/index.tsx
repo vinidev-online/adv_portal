@@ -7,7 +7,10 @@ export default function QuadroInterno({
   ...props
 }: HTMLMotionProps<"div"> & { texto: ITextoExib }) {
   return (
-    <motion.div className={twMerge(className, "")} {...props}>
+    <motion.div
+      className={twMerge(className, "relative overflow-hidden rounded-md")}
+      {...props}
+    >
       QuadroInterno
     </motion.div>
   );
