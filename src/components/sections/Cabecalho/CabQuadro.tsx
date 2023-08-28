@@ -9,7 +9,7 @@ export default function CabQuadro({
   return (
     <motion.div
       className={twMerge(
-        "fixed top-16 z-[99] flex max-h-[calc(80vh-4rem)] min-h-0 w-full flex-wrap content-start gap-4 bg-claro-alt/75 object-top px-16 text-base backdrop-blur-md",
+        "fixed top-16 z-[98] flex max-h-[calc(80vh-4rem)] min-h-0 w-full flex-wrap content-start justify-between gap-4 bg-claro-alt/75 object-top px-16 text-base backdrop-blur-md",
         className,
       )}
       {...props}

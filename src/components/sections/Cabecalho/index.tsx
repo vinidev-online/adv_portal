@@ -34,11 +34,19 @@ const retornaPaginas = async () =>
   (await api.get<Pagina[]>("/pagina/retorna")).data;
 
 const CabQuadroVariants: Variants = {
-  escondido: { paddingTop: "0", paddingBottom: "0", opacity: 0 },
+  escondido: {
+    paddingTop: "0",
+    paddingBottom: "0",
+    opacity: 0,
+    scaleY: 0,
+    translateY: "-50%",
+  },
   visivel: {
     paddingTop: "1rem",
     paddingBottom: "1rem",
     opacity: 1,
+    scaleY: 1,
+    translateY: "0",
   },
 };
 
@@ -62,7 +70,7 @@ const CabQuadroColunaVariants: Variants = {
 
 export default function Cabecalho() {
   const [menuAberto, setMenuAberto] = useState<
-    "" | "igrejas" | "departamentos" | "tipos" | "paginas"
+    "" | "igrejas" | "departamentos" | "tipos" | "paginas" | "busca"
   >("");
   const { data: igrejas } = useSWR("retornaIgrejas", retornaIgrejas);
   const { data: departamentos } = useSWR(
@@ -119,7 +127,9 @@ export default function Cabecalho() {
         <Link
           href="#"
           className="flex h-full items-center"
-          onMouseOver={() => setMenuAberto("")}
+          onClick={() =>
+            setMenuAberto((state) => (state === "busca" ? "" : "busca"))
+          }
         >
           <Search strokeWidth={1.5} size={18} />
         </Link>
@@ -273,6 +283,20 @@ export default function Cabecalho() {
               </motion.div>
             </CabLink>
           ))}
+        </div>
+      </CabQuadro>
+      <CabQuadro
+        variants={CabQuadroVariants}
+        initial="escondido"
+        animate={menuAberto === "busca" ? "visivel" : "escondido"}
+      >
+        <div className="flex w-full items-center gap-2 text-xl">
+          <Search strokeWidth={3} className="text-borda-claro" />
+          <input
+            className="flex-1 bg-transparent p-1 font-bold tracking-tight outline-none placeholder:text-borda-claro/50"
+            name="busca"
+            placeholder="Busca Aqui..."
+          />
         </div>
       </CabQuadro>
     </>
