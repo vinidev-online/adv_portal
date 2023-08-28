@@ -82,7 +82,7 @@ export default function Cabecalho() {
 
   return (
     <>
-      <div className="cabecalho flex h-16 items-center justify-between bg-claro-alt/75 px-16 backdrop-blur-md">
+      <div className="cabecalho sticky top-0 z-[99] flex h-16 items-center justify-between bg-claro-alt/75 px-16 backdrop-blur-md">
         <Link
           href="/"
           className="transicao-hover text-[3.25rem] text-igreja-padrao hover:scale-110"
